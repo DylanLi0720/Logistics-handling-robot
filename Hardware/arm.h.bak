@@ -1,0 +1,55 @@
+#ifndef __ARM_H_
+#define __ARM_H_
+
+#include "main.h"
+
+void setSpeedPosition(uint8_t channel, uint8_t speed, uint16_t angle);
+
+void GetAllMass();
+void putRawMassToRoughMachine();
+void putRawMassToSemiProcess();	
+void compareArray(void);
+void catchOneMass(uint8_t order);
+void Servo(uint8_t num, uint16_t angel);
+void initializeARM();
+void catchLeftMaterial(void);
+void catchMidMaterial(void);
+void catchRightMaterial(void);
+void putToRight(void);
+void putToMid(void);
+void putToLeft(void);
+void catchOneMass(uint8_t order);
+
+
+void putRed(void);
+void putGreen(void);
+void putBlue(void);
+
+void putRawMassToRoughMachine(void);
+void putRawMassToRoughMachine3(void);
+void getBlue(void);
+void getGreen(void);
+void getRed(void);
+void getMassAtRough(void);
+void getMassAtRough3(void);
+void postureArm(uint8_t order);
+
+void getGroundFloorMass(void);
+void sgetleft(void);
+void putbackBlue(void);
+void sgetmid(void);
+void putbackGreen(void);
+void sgetright(void);
+void putbackRed(void);
+void postureArm(uint8_t order);
+void sputMass(uint8_t colr);
+
+void putRawMassToSemiProcess2(void);
+
+extern unsigned char DM_Speed_Position[10];   
+extern uint8_t order1[3], order2[3];
+
+#define servoSpeed 8
+#define lowservoSpeed 4
+
+#endif

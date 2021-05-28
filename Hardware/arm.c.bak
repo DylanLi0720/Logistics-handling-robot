@@ -1,0 +1,1111 @@
+#include "arm.h"
+#include "main.h"
+
+unsigned char DM_Speed_Position[10] = {0xff, 0x01, 0x00, 0x01, 0x00, 0xff, 0x02, 0x00, 0xdc, 0x05};  //通道0，速度=1，位置90度
+
+/**
+  * @brief  设置单个舵机的速度和角度
+  * @param  channel: 舵机通道号0~15
+  * @param  speed: 转动速度1~20
+  * @param	angle: 舵机角度0~180
+  * @retval None
+  */
+void setSpeedPosition(uint8_t channel, uint8_t speed, uint16_t angle)
+{
+	uint16_t position = (uint16_t) ((2.0 * angle / 3.0) * 1.0 * 2000 / 180 + 500);
+//	uint32_t position = angle;
+	/*使用串口2设置速度*/
+	
+	DM_Speed_Position[2] = channel;
+	DM_Speed_Position[3] = speed;
+	
+	/*使用串口2设置位置*/
+	
+	DM_Speed_Position[7] = channel;
+	
+	DM_Speed_Position[8] = (position % 256);
+	DM_Speed_Position[9] = (position / 256);
+	HAL_UART_Transmit(&huart2, DM_Speed_Position, 10, 0xffff);//设置通道，速度，位置 
+		
+}
+
+uint8_t order1[3], order2[3];
+
+void compareArray(void)
+{
+	for(uint8_t i = 0; i < 3; i++)
+	{
+		for(uint8_t j = 0; j < 3; j++)
+		if(QR[i] == color[j])
+		{
+			order1[i] = j;
+		}
+	}
+	for(uint8_t i = 3; i < 6; i++)
+	{
+		for(uint8_t j = 3; j < 6; j++)
+		if(QR[i] == color[j])
+		{
+			order2[i - 3] = j - 3;
+		}
+	}
+}
+
+//uint32_t channel[4] = {TIM_CHANNEL_1,TIM_CHANNEL_2,TIM_CHANNEL_3,TIM_CHANNEL_4};
+//TIM_HandleTypeDef *time[2] = {&htim3,&htim4};
+
+//void Servo(uint8_t num, uint16_t angel)
+//{
+//	uint8_t a = num / 4;
+//	num = (num > 3 ? 0:num);
+//  //HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
+//  uint16_t pwm_val = (2.0/2.70)*angel+50;
+//  __HAL_TIM_SetCompare(time[a], channel[num], pwm_val); 
+//  HAL_Delay(200);
+//  //HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_1);
+//}
+
+void initializeARM()
+{
+	setSpeedPosition(1, 4, 80);
+	delay_ms(500);
+	setSpeedPosition(2, 4, 137);
+	//delay_ms(1000);
+	setSpeedPosition(3, 4, 90);
+	//delay_ms(800);
+	setSpeedPosition(0, 4, 90);
+	delay_ms(800);
+	setSpeedPosition(8, 4, 60);
+	delay_ms(800);
+}
+
+/*原料区抓取*/
+void catchLeftMaterial(void)
+{
+	setSpeedPosition(8, servoSpeed, 60);
+	delay_ms(500);
+	setSpeedPosition(3, servoSpeed, 140);
+	//delay_ms(800);
+	setSpeedPosition(2, servoSpeed, 100);
+	//delay_ms(800);
+	setSpeedPosition(0, servoSpeed, 132);
+	delay_ms(800);
+	setSpeedPosition(1, servoSpeed, 158);
+	delay_ms(800);
+	setSpeedPosition(8, servoSpeed, 13);
+	delay_ms(800);
+}
+
+void putToRight(void)
+{
+	setSpeedPosition(1, servoSpeed, 100);
+	delay_ms(600);
+	setSpeedPosition(3, servoSpeed, 85);
+	//delay_ms(800);
+	setSpeedPosition(2, servoSpeed, 128);
+	//delay_ms(800);
+	setSpeedPosition(0, servoSpeed, 111);
+	delay_ms(1000);
+	setSpeedPosition(1, servoSpeed, 40);
+	delay_ms(1000);
+	setSpeedPosition(8, servoSpeed, 40);
+	delay_ms(800);
+	
+//	setSpeedPosition(3, 4, 60);
+//	delay_ms(1000);
+	setSpeedPosition(1, servoSpeed, 100);
+	delay_ms(600);
+	setSpeedPosition(8, servoSpeed, 60);
+//  
+	 delay_ms(200);
+//	initializeARM();
+}
+
+
+void catchMidMaterial(void)
+{
+	setSpeedPosition(8, servoSpeed, 60);
+	//delay_ms(1000);
+	setSpeedPosition(3, servoSpeed, 133);
+	//delay_ms(800);
+	setSpeedPosition(2, servoSpeed, 45);
+	//delay_ms(800);
+	setSpeedPosition(0, servoSpeed, 90);
+	delay_ms(1000);
+	setSpeedPosition(1, servoSpeed, 115);
+	delay_ms(800);
+	setSpeedPosition(8, servoSpeed, 13);
+	delay_ms(800);
+}
+
+void putToMid(void)
+{
+	setSpeedPosition(1, servoSpeed, 100);
+	delay_ms(800);
+	setSpeedPosition(3, servoSpeed, 90);
+	//delay_ms(800);
+	setSpeedPosition(2, servoSpeed, 137);
+	//delay_ms(800);
+	setSpeedPosition(0, servoSpeed, 90);
+	delay_ms(1000);
+	setSpeedPosition(1, servoSpeed, 40);
+	delay_ms(800);
+	setSpeedPosition(8, servoSpeed, 40);
+	delay_ms(600);
+	
+//	setSpeedPosition(3, 4, 60);
+//	delay_ms(1000);
+	setSpeedPosition(1, servoSpeed, 100);
+	delay_ms(600);
+	setSpeedPosition(8, servoSpeed, 60);
+	delay_ms(200);
+	
+//	initializeARM();
+}
+
+
+void catchRightMaterial(void)
+{
+	setSpeedPosition(8, servoSpeed, 60);
+	//delay_ms(1000);
+	setSpeedPosition(3, servoSpeed, 130);
+	//delay_ms(100);
+	setSpeedPosition(2, servoSpeed, 90);
+	//delay_ms(100);
+	setSpeedPosition(0, servoSpeed, 43);
+	delay_ms(1000);
+	setSpeedPosition(1,servoSpeed, 160);
+	delay_ms(800);
+	setSpeedPosition(8, servoSpeed, 13);
+	delay_ms(800);
+}
+
+void putToLeft(void)
+{
+	setSpeedPosition(1, servoSpeed, 100);
+	delay_ms(500);
+	setSpeedPosition(3, servoSpeed, 90);
+	//delay_ms(800);
+	setSpeedPosition(2, servoSpeed, 135);
+	//delay_ms(800);
+//	setSpeedPosition(1, servoSpeed, 100);
+//	delay_ms(1000);
+	setSpeedPosition(0, servoSpeed, 65);
+	delay_ms(800);
+	setSpeedPosition(1, servoSpeed, 38);
+	delay_ms(1000);
+	setSpeedPosition(8, servoSpeed, 40);
+	delay_ms(1000);
+	
+//	setSpeedPosition(3, 4, 60);
+//	delay_ms(1000);
+	setSpeedPosition(1, servoSpeed, 100);
+	delay_ms(500);
+	setSpeedPosition(8, servoSpeed, 60);
+	delay_ms(200);
+	
+//	initializeARM();
+}
+
+void catchOneMass(uint8_t order)
+{
+	switch(order)
+	{
+		case 0://拿左边物料
+		{
+			catchLeftMaterial();
+			if(color[0] == 1)
+				putToLeft();
+			else if(color[0] == 2)
+				putToMid();
+			else if(color[0] == 3)
+				putToRight();
+			break;
+		}
+		case 1://拿中间物料
+		{
+			catchMidMaterial();
+			if(color[1] == 1)
+				putToLeft();
+			else if(color[1] == 2)
+				putToMid();
+			else if(color[1] == 3)
+				putToRight();
+			break;
+		}
+		case 2://拿右边物料
+		{
+			catchRightMaterial();
+			if(color[2] == 1)
+				putToLeft();
+			else if(color[2] == 2)
+				putToMid();
+			else if(color[2] == 3)
+				putToRight();
+			break;
+		}
+	}
+}
+
+/**
+  * @brief  拿取原料区的三个物料
+  * @param  None
+  * @retval None
+  */
+void GetAllMass()
+{
+	compareArray();
+	
+	catchOneMass(order1[0]);
+	delay_ms(1000);
+	catchOneMass(order1[1]);
+	delay_ms(1000);
+	catchOneMass(order1[2]);
+	delay_ms(1000);	
+}
+
+/************************************************************/
+
+/*粗加工区放取*/
+
+void putRed(void)
+{
+	setSpeedPosition(1,servoSpeed,100);
+	delay_ms(800);
+	setSpeedPosition(0,servoSpeed,65);
+	//delay_ms(800);
+	setSpeedPosition(3,servoSpeed,90);
+	//delay_ms(800);
+	setSpeedPosition(2,servoSpeed,137);
+	delay_ms(500);
+	setSpeedPosition(1,lowservoSpeed,43);
+	delay_ms(1000);
+	setSpeedPosition(8,lowservoSpeed,13);
+	delay_ms(800);
+	
+	setSpeedPosition(1,servoSpeed,200);
+	delay_ms(1000);
+	setSpeedPosition(0,servoSpeed,47);
+	//delay_ms(500);
+	setSpeedPosition(3,servoSpeed,115);
+	//delay_ms(500);
+	setSpeedPosition(2,lowservoSpeed,155);
+	delay_ms(500);
+	setSpeedPosition(1,lowservoSpeed,245);
+	delay_ms(800);
+	setSpeedPosition(8,lowservoSpeed,60);
+	delay_ms(300);
+	
+	setSpeedPosition(3,lowservoSpeed,70);
+	delay_ms(800);
+	setSpeedPosition(1,lowservoSpeed,100);
+	//delay_ms(1500);
+	setSpeedPosition(8,servoSpeed,40);
+	delay_ms(1500);
+	
+}
+
+void putGreen(void)
+{
+	setSpeedPosition(3,servoSpeed,90);
+	//delay_ms(800);
+	setSpeedPosition(0,servoSpeed,90);
+	//delay_ms(800);
+	setSpeedPosition(2,servoSpeed,135);
+	delay_ms(1000);
+	setSpeedPosition(1,lowservoSpeed,40);
+	delay_ms(1200);
+	setSpeedPosition(8,lowservoSpeed,13);
+	delay_ms(800);
+	
+	setSpeedPosition(1,servoSpeed,200);
+	delay_ms(1000);
+	setSpeedPosition(0,servoSpeed,98);
+	delay_ms(300);
+	setSpeedPosition(2,servoSpeed,117);
+	delay_ms(500);
+	setSpeedPosition(3,servoSpeed,78);
+	delay_ms(200);
+	setSpeedPosition(1,lowservoSpeed,246);
+	delay_ms(1500);
+	setSpeedPosition(8,servoSpeed,150);//放下绿色物料
+	delay_ms(1500);
+	
+	setSpeedPosition(0,servoSpeed,70  );
+	delay_ms(300);
+	setSpeedPosition(3,servoSpeed,60);
+	delay_ms(300);
+	setSpeedPosition(1,lowservoSpeed,100);
+	delay_ms(800);
+	setSpeedPosition(8,lowservoSpeed,40);
+	delay_ms(1000);//抬起爪子
+}
+
+void putBlue(void)
+{
+	setSpeedPosition(3,servoSpeed,85);
+	//delay_ms(800);
+	setSpeedPosition(2,servoSpeed,128);
+	//delay_ms(800);
+	setSpeedPosition(0,servoSpeed,113);
+	delay_ms(800);
+	setSpeedPosition(1,lowservoSpeed,40);
+	delay_ms(1000);
+	setSpeedPosition(8,lowservoSpeed,13);
+	delay_ms(1000);
+	
+	setSpeedPosition(1,servoSpeed,200);
+	//delay_ms(1800);
+	setSpeedPosition(0,servoSpeed,145);
+	 delay_ms(800);
+	setSpeedPosition(2,servoSpeed,180);
+	//delay_ms(800);
+	setSpeedPosition(3,lowservoSpeed,125);
+	delay_ms(800);
+	setSpeedPosition(1,lowservoSpeed,255);
+	delay_ms(1200);
+	setSpeedPosition(8,lowservoSpeed,50);
+	delay_ms(800);//放下蓝色物料
+	
+	setSpeedPosition(3,servoSpeed,70);
+	delay_ms(800);
+	setSpeedPosition(1,lowservoSpeed,150);
+	delay_ms(1000);
+	setSpeedPosition(8,lowservoSpeed,40);
+	delay_ms(500);//放下蓝色物料
+}
+
+
+void putRawMassToRoughMachine(void)
+{	
+	switch(QR[0])
+	{
+		case 1:
+			putRed();
+			break;
+		case 2:
+			putGreen();
+			break;
+		case 3:
+			putBlue();
+			break;
+	}
+	switch(QR[1])
+	{
+		case 1:
+			putRed();
+			break;
+		case 2:
+			putGreen();
+			break;
+		case 3:
+			putBlue();
+			break;
+	}
+	switch(QR[2])
+	{
+		case 1:
+			putRed();
+			break;
+		case 2:
+			putGreen();
+			break;
+		case 3:
+			putBlue();
+			break;
+	}
+}
+
+void putRawMassToRoughMachine3(void)
+{	
+	switch(QR[3])
+	{
+		case 1:
+			putRed();
+			break;
+		case 2:
+			putGreen();
+			break;
+		case 3:
+			putBlue();
+			break;
+	}
+	switch(QR[4])
+	{
+		case 1:
+			putRed();
+			break;
+		case 2:
+			putGreen();
+			break;
+		case 3:
+			putBlue();
+			break;
+	}
+	switch(QR[5])
+	{
+		case 1:
+			putRed();
+			break;
+		case 2:
+			putGreen();
+			break;
+		case 3:
+			putBlue();
+			break;
+	}
+}
+
+void getBlue(void)
+{
+	setSpeedPosition(8,lowservoSpeed,70);
+//	delay_ms(500);//放下蓝色物料
+	setSpeedPosition(1,servoSpeed,200);
+	delay_ms(1000);
+	setSpeedPosition(0,servoSpeed,143);
+	//delay_ms(1000);
+	setSpeedPosition(2,servoSpeed,185);
+	//delay_ms(800);
+	setSpeedPosition(3,servoSpeed,90);
+	delay_ms(800);
+	setSpeedPosition(1,servoSpeed,255);
+	delay_ms(1000);
+	setSpeedPosition(3,servoSpeed,133);
+	delay_ms(800);
+	setSpeedPosition(8,servoSpeed,13);
+	delay_ms(800);
+	
+	setSpeedPosition(1,servoSpeed,100);
+	delay_ms(2500);
+	setSpeedPosition(3,servoSpeed,85);
+	//delay_ms(300);
+	setSpeedPosition(2,servoSpeed,128);
+	//delay_ms(800);
+	setSpeedPosition(0,servoSpeed,112);
+	delay_ms(200);
+	setSpeedPosition(1,servoSpeed,40);
+	delay_ms(800);
+	setSpeedPosition(8,servoSpeed,40);
+	delay_ms(500);
+	
+//	setSpeedPosition(3,4,60);
+//	delay_ms(1000);
+	setSpeedPosition(1,servoSpeed,100);
+	delay_ms(800);
+}
+
+void getGreen(void)
+{
+	setSpeedPosition(8,lowservoSpeed,70);
+//	delay_ms(500);//放下蓝色物料
+	setSpeedPosition(1,servoSpeed,200);
+	delay_ms(1000);
+	setSpeedPosition(8,servoSpeed,150);
+	//delay_ms(1000);
+	setSpeedPosition(0,servoSpeed,70);
+	//delay_ms(1000);
+	setSpeedPosition(2,servoSpeed,110);
+	//delay_ms(800);
+	setSpeedPosition(3,servoSpeed,60);
+	delay_ms(1000);
+	setSpeedPosition(1,servoSpeed,245);
+	delay_ms(1000);
+	setSpeedPosition(0,servoSpeed,95);
+	delay_ms(600);
+	setSpeedPosition(3,servoSpeed,78);
+	delay_ms(500);
+	setSpeedPosition(8,servoSpeed,13);
+	delay_ms(2500);
+	
+	setSpeedPosition(1,servoSpeed,100);
+	delay_ms(1000);
+	setSpeedPosition(3,servoSpeed,90);
+	//delay_ms(500);
+	setSpeedPosition(2,servoSpeed,135);
+	//delay_ms(500);
+	setSpeedPosition(0,servoSpeed,90);
+	delay_ms(600);
+	setSpeedPosition(1,servoSpeed,40);
+	delay_ms(1000);
+	
+	setSpeedPosition(8,servoSpeed,40);
+	delay_ms(800);
+	
+//	setSpeedPosition(3,4,60);
+//	delay_ms(1000);
+	setSpeedPosition(1,4,100);
+	delay_ms(800);	
+}
+
+void getRed(void)
+{
+	setSpeedPosition(8,lowservoSpeed,70);
+//	delay_ms(500);//放下蓝色物料
+	setSpeedPosition(1,servoSpeed,200);
+	delay_ms(1500);
+	setSpeedPosition(0,servoSpeed,52);
+	//delay_ms(1000);
+	setSpeedPosition(2,servoSpeed,165);
+	//delay_ms(1000);
+	setSpeedPosition(3,servoSpeed,70);
+	delay_ms(1000);
+	//setSpeedPosition(8,servoSpeed,60);
+	//delay_ms(1000);
+	setSpeedPosition(1,servoSpeed,250);
+	delay_ms(500);
+	setSpeedPosition(3,servoSpeed,120);
+	delay_ms(1500);
+	setSpeedPosition(8,servoSpeed,13);
+	delay_ms(1000);
+	
+	setSpeedPosition(1,servoSpeed,100);
+	delay_ms(2000);
+	setSpeedPosition(0,servoSpeed,65);
+	//delay_ms(500);
+	setSpeedPosition(3,servoSpeed,90);
+	//delay_ms(500);
+	setSpeedPosition(2,servoSpeed,137);
+	delay_ms(300);
+	setSpeedPosition(1,servoSpeed,43);
+	delay_ms(1000);
+	setSpeedPosition(8,servoSpeed,40);
+	delay_ms(500);
+	
+//	setSpeedPosition(3,4,60);
+//	delay_ms(1000);
+	setSpeedPosition(1,4,100);
+	delay_ms(800);
+}
+
+void getMassAtRough(void)
+{
+		switch(QR[0])
+	{
+		case 1:
+			getRed();
+			break;
+		case 2:
+			getGreen();
+			break;
+		case 3:
+			getBlue();
+			break;
+	}
+	switch(QR[1])
+	{
+		case 1:
+			getRed();
+			break;
+		case 2:
+			getGreen();
+			break;
+		case 3:
+			getBlue();
+			break;
+	}
+	switch(QR[2])
+	{
+		case 1:
+			getRed();
+			break;
+		case 2:
+			getGreen();
+			break;
+		case 3:
+			getBlue();
+			break;
+	}
+}
+
+void getMassAtRough3(void)
+{
+		switch(QR[3])
+	{
+		case 1:
+			getRed();
+			break;
+		case 2:
+			getGreen();
+			break;
+		case 3:
+			getBlue();
+			break;
+	}
+	switch(QR[4])
+	{
+		case 1:
+			getRed();
+			break;
+		case 2:
+			getGreen();
+			break;
+		case 3:
+			getBlue();
+			break;
+	}
+	switch(QR[5])
+	{
+		case 1:
+			getRed();
+			break;
+		case 2:
+			getGreen();
+			break;
+		case 3:
+			getBlue();
+			break;
+	}
+}
+
+/******************************************************/
+/*半成品区的拿放*/
+void putRedSemi1(void)
+{
+	setSpeedPosition(1,servoSpeed,100);
+	delay_ms(800);
+	setSpeedPosition(0,servoSpeed,65);
+	//delay_ms(800);
+	setSpeedPosition(2,servoSpeed,137);
+	//delay_ms(800);
+	setSpeedPosition(3,servoSpeed,90);
+	delay_ms(800);
+	setSpeedPosition(1,servoSpeed,43);
+	delay_ms(1500);
+	setSpeedPosition(8,servoSpeed,13);
+	delay_ms(500);
+	
+    setSpeedPosition(3,4,60);
+//	delay_ms(1000);
+	setSpeedPosition(1,servoSpeed,200);
+	delay_ms(1500);
+	
+	setSpeedPosition(0,lowservoSpeed,52);
+	//delay_ms(300);
+	setSpeedPosition(2,servoSpeed,137);
+	//delay_ms(500);
+	setSpeedPosition(3,servoSpeed,113);
+	delay_ms(500);
+	setSpeedPosition(1,lowservoSpeed,230);
+	delay_ms(800);
+	setSpeedPosition(8,lowservoSpeed,50);
+	delay_ms(800);
+	
+	setSpeedPosition(3,lowservoSpeed,60);
+	delay_ms(1000);
+	setSpeedPosition(1,lowservoSpeed,100);
+	delay_ms(500);
+	setSpeedPosition(8,lowservoSpeed,40);
+	//delay_ms(1000);
+}
+
+void putGreenSemi1(void)
+{
+	setSpeedPosition(3,servoSpeed,90);
+	//delay_ms(800);
+	setSpeedPosition(2,servoSpeed,135);
+	//delay_ms(800);
+	setSpeedPosition(0,servoSpeed,90);
+	delay_ms(500);
+	setSpeedPosition(1,servoSpeed,40);
+	delay_ms(2000);
+	setSpeedPosition(8,servoSpeed,13);
+	delay_ms(800);
+	
+	setSpeedPosition(1,servoSpeed,100);
+	//delay_ms(500);
+	setSpeedPosition(2,servoSpeed,102);
+	//delay_ms(100);
+	setSpeedPosition(3,servoSpeed,68);
+	delay_ms(100);
+	setSpeedPosition(0,lowservoSpeed,97);
+	delay_ms(1000);
+	setSpeedPosition(1,lowservoSpeed,230);
+	delay_ms(2000);
+	setSpeedPosition(8,lowservoSpeed,150);//放下绿色物料
+	delay_ms(1500);
+	
+	setSpeedPosition(0,lowservoSpeed,55);
+	delay_ms(1000);
+	setSpeedPosition(1,lowservoSpeed,100);
+	delay_ms(1000);
+	setSpeedPosition(8,8,40);
+	delay_ms(1000);//抬起爪子
+}
+
+void putBlueSemi1(void)
+{
+	setSpeedPosition(3,servoSpeed,85);
+	delay_ms(1000);
+	setSpeedPosition(2,servoSpeed,128);
+	delay_ms(1000);
+	setSpeedPosition(0,servoSpeed,111);
+	delay_ms(1000);
+	setSpeedPosition(1,servoSpeed,40);
+	delay_ms(2000);
+	setSpeedPosition(8,servoSpeed,13);
+	delay_ms(800);
+	
+	setSpeedPosition(1,servoSpeed,100);
+	delay_ms(2000);
+	setSpeedPosition(0,lowservoSpeed,138);
+	delay_ms(800);
+	setSpeedPosition(2,servoSpeed,175);
+	delay_ms(1000);
+	setSpeedPosition(3,servoSpeed,130);
+	//delay_ms(1000);
+	setSpeedPosition(1,lowservoSpeed,243);
+	delay_ms(2000);
+	setSpeedPosition(8,lowservoSpeed,40);
+	delay_ms(800);//放下蓝色物料
+	
+	setSpeedPosition(3,lowservoSpeed,60);
+	delay_ms(1000);
+	setSpeedPosition(1,lowservoSpeed,100);
+	delay_ms(2500);
+}
+
+void putRedSemi2(void)
+{
+	setSpeedPosition(1,servoSpeed,100);
+	//delay_ms(800);
+	setSpeedPosition(8,lowservoSpeed,50);
+	delay_ms(800);
+	setSpeedPosition(0,servoSpeed,65);
+	//delay_ms(800);
+	setSpeedPosition(2,servoSpeed,137);
+	//delay_ms(800);
+	setSpeedPosition(3,servoSpeed,90);
+	delay_ms(800);
+	setSpeedPosition(1,servoSpeed,43);
+	delay_ms(1000);
+	setSpeedPosition(8,servoSpeed,13);
+	delay_ms(800);
+	
+//	setSpeedPosition(3,4,60);
+//	delay_ms(1000);
+	setSpeedPosition(1,servoSpeed,100);
+	delay_ms(1000);
+	setSpeedPosition(2,servoSpeed,100);
+	//delay_ms(800);
+	setSpeedPosition(3,servoSpeed,115);
+	//delay_ms(800);
+	setSpeedPosition(0,lowservoSpeed,48);
+	delay_ms(800);
+	setSpeedPosition(1,lowservoSpeed,180);
+	delay_ms(1500);
+	setSpeedPosition(8,lowservoSpeed,50);
+	delay_ms(500);
+	
+	setSpeedPosition(2,lowservoSpeed,70);
+	//delay_ms(800);
+	setSpeedPosition(3,lowservoSpeed,70);
+	delay_ms(800);
+	setSpeedPosition(1,lowservoSpeed,100);
+	delay_ms(1000);
+	setSpeedPosition(8,lowservoSpeed,40);
+	//delay_ms(500);
+}
+
+void putGreenSemi2(void)
+{
+	setSpeedPosition(1,lowservoSpeed,100);
+	delay_ms(1000);
+	setSpeedPosition(3,servoSpeed,90);
+	//delay_ms(800);
+	setSpeedPosition(2,servoSpeed,135);
+	//delay_ms(800);
+	setSpeedPosition(0,servoSpeed,90);
+	delay_ms(1000);
+	setSpeedPosition(1,servoSpeed,40);
+	delay_ms(1000);
+	setSpeedPosition(8,servoSpeed,13);
+	delay_ms(1000);
+	
+	setSpeedPosition(1,servoSpeed,100);
+	delay_ms(2000);
+	setSpeedPosition(2,servoSpeed,63);
+	//delay_ms(1000);
+	setSpeedPosition(3,servoSpeed,77);
+	//delay_ms(500);
+	setSpeedPosition(0,lowservoSpeed,95);
+	delay_ms(1000);
+	setSpeedPosition(1,lowservoSpeed,178);
+	delay_ms(1000);
+	setSpeedPosition(8,lowservoSpeed,150);//放下绿色物料
+	delay_ms(2000);
+	
+	setSpeedPosition(0,lowservoSpeed,60);
+	delay_ms(800);
+	setSpeedPosition(1,lowservoSpeed,100);
+	delay_ms(1500);
+	setSpeedPosition(8,lowservoSpeed,40);
+	//delay_ms(1000);//抬起爪子
+}
+
+void putBlueSemi2(void)
+{
+	setSpeedPosition(1,lowservoSpeed,100);
+	delay_ms(1000);
+	setSpeedPosition(3,servoSpeed,85);
+	//delay_ms(800);
+	setSpeedPosition(2,servoSpeed,128);
+	//delay_ms(800);
+	setSpeedPosition(0,servoSpeed,111);
+	delay_ms(800);
+	setSpeedPosition(1,servoSpeed,40);
+	delay_ms(1200);
+	setSpeedPosition(8,servoSpeed,13);
+	delay_ms(1000);
+	
+	setSpeedPosition(1,servoSpeed,100);
+	delay_ms(1200);
+	setSpeedPosition(2,servoSpeed,112);
+	//delay_ms(500);
+	setSpeedPosition(3,servoSpeed,130);
+	//delay_ms(800);
+	setSpeedPosition(0,lowservoSpeed,136);
+	delay_ms(500);
+	setSpeedPosition(1,lowservoSpeed,180);
+	delay_ms(1600);
+	setSpeedPosition(8,lowservoSpeed,60);
+	delay_ms(800);//放下蓝色物料
+	
+	setSpeedPosition(2,lowservoSpeed,70);
+	//delay_ms(900);
+	setSpeedPosition(3,lowservoSpeed,70);
+	delay_ms(800);
+	setSpeedPosition(1,lowservoSpeed,100);
+	delay_ms(1500);
+	setSpeedPosition(8,lowservoSpeed,40);
+	//delay_ms(500);
+}
+
+
+void putRawMassToSemiProcess()
+{
+	switch(QR[0])
+	{
+		case 1:
+			putRedSemi1();
+			break;
+		case 2:
+			putGreenSemi1();
+			break;
+		case 3:
+			putBlueSemi1();
+			break;
+	}
+	switch(QR[1])
+	{
+		case 1:
+			putRedSemi1();
+			break;
+		case 2:
+			putGreenSemi1();
+			break;
+		case 3:
+			putBlueSemi1();
+			break;
+	}
+	switch(QR[2])
+	{
+		case 1:
+			putRedSemi1();
+			break;
+		case 2:
+			putGreenSemi1();
+			break;
+		case 3:
+			putBlueSemi1();
+			break;
+	}
+}
+
+void putRawMassToSemiProcess2(void)
+{
+	switch(QR[3])
+	{
+		case 1:
+			putRedSemi2();
+			break;
+		case 2:
+			putGreenSemi2();
+			break;
+		case 3:
+			putBlueSemi2();
+			break;
+	}
+	switch(QR[4])
+	{
+		case 1:
+			putRedSemi2();
+			break;
+		case 2:
+			putGreenSemi2();
+			break;
+		case 3:
+			putBlueSemi2();
+			break;
+	}
+	switch(QR[5])
+	{
+		case 1:
+			putRedSemi2();
+			break;
+		case 2:
+			putGreenSemi2();
+			break;
+		case 3:
+			putBlueSemi2();
+			break;
+	}
+}
+/********************************************************/
+
+/*第二次拿取原料区底层*/
+
+void sgetleft(void)
+{
+	setSpeedPosition(1,servoSpeed,200);
+	//delay_ms(1500);
+	setSpeedPosition(0,servoSpeed,134);
+	//delay_ms(800);
+	setSpeedPosition(2,servoSpeed,165);
+	//delay_ms(800);
+	setSpeedPosition(3,servoSpeed,120);
+	//delay_ms(1500);
+	setSpeedPosition(1,servoSpeed,240);
+	delay_ms(800);
+	setSpeedPosition(8,servoSpeed,60);
+	delay_ms(1500);
+}
+
+void putbackBlue(void)
+{
+	setSpeedPosition(1,servoSpeed,100);
+	delay_ms(200);
+	setSpeedPosition(3,servoSpeed,85);
+	delay_ms(200);
+	setSpeedPosition(2,servoSpeed,128);
+	delay_ms(1000);
+	setSpeedPosition(0,servoSpeed,112);
+	delay_ms(1000);
+	setSpeedPosition(1,servoSpeed,40);
+	delay_ms(1500);
+	setSpeedPosition(8,servoSpeed,40);
+	delay_ms(600);
+	
+//	setSpeedPosition(3,4,60);
+//	delay_ms(1000);
+	setSpeedPosition(1,4,100);
+	delay_ms(1000);
+}
+
+void sgetmid(void)
+{
+	setSpeedPosition(1,servoSpeed,200);
+	//delay_ms(2000);
+	setSpeedPosition(0,servoSpeed,95);
+	//delay_ms(1000);
+	setSpeedPosition(2,servoSpeed,115);
+	//delay_ms(800);
+	setSpeedPosition(3,servoSpeed,70);
+	//delay_ms(2000);
+	setSpeedPosition(1,servoSpeed,240);
+	//delay_ms(800);
+	setSpeedPosition(8,servoSpeed,60);
+	delay_ms(1500);
+}
+
+void putbackGreen(void)
+{
+	setSpeedPosition(1,lowservoSpeed,100);
+	//delay_ms(1000);
+	setSpeedPosition(3, servoSpeed, 90);
+	delay_ms(200);
+	setSpeedPosition(2, servoSpeed, 137);
+	delay_ms(200);
+	setSpeedPosition(0, servoSpeed, 90);
+	delay_ms(800);
+	setSpeedPosition(1, servoSpeed, 40);
+	delay_ms(1000);
+	setSpeedPosition(8, servoSpeed, 40);
+	delay_ms(1000);
+	
+//	setSpeedPosition(3, 4, 60);
+//	delay_ms(1000);
+	setSpeedPosition(1, servoSpeed, 100);
+	delay_ms(1000);
+}
+
+void sgetright(void)
+{
+	setSpeedPosition(1,servoSpeed,200);
+	//delay_ms(2000);
+	setSpeedPosition(0,servoSpeed,50);
+	//delay_ms(1000);
+	setSpeedPosition(2,servoSpeed,165);
+	//delay_ms(800);
+	setSpeedPosition(3,servoSpeed,120);
+	//delay_ms(2000);
+	setSpeedPosition(1,servoSpeed,240);
+	//delay_ms(1000);
+	setSpeedPosition(8,servoSpeed,60);
+	delay_ms(1500);
+}
+
+void putbackRed(void)
+{
+	setSpeedPosition(1,servoSpeed,100);
+	//delay_ms(2500);
+	setSpeedPosition(0,servoSpeed,65);
+	//delay_ms(1000);
+	setSpeedPosition(3,servoSpeed,90);
+	//delay_ms(800);
+	setSpeedPosition(2,servoSpeed,137);
+	delay_ms(2000);
+	setSpeedPosition(1,servoSpeed,43);
+	delay_ms(1000);
+	setSpeedPosition(8,servoSpeed,40);
+	delay_ms(800);
+	
+//	setSpeedPosition(3,4,60);
+//	delay_ms(1000);
+	setSpeedPosition(1,servoSpeed,100);
+	delay_ms(1000);
+}
+
+
+void postureArm(uint8_t order)
+{
+	compareArray();
+	switch(order)
+	{
+		case 0://拿左边物料
+			sgetleft();
+			break;
+		case 1://拿中间物料
+			sgetmid();
+			break;
+		case 2://拿右边物料
+			sgetright();
+			break;
+	}
+}
+
+void sputMass(uint8_t colr)
+{
+//	compareArray();
+	switch(colr)
+	{
+		case 1:
+			putbackRed();
+			break;
+		case 2:
+			putbackGreen();
+			break;
+		case 3:
+			putbackBlue();
+			break;
+	}
+}
